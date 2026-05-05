@@ -1,0 +1,7 @@
+sclp-submit/
+*.sym
+*.ast
+*.toks
+*.tac
+*.rtl
+*.spim
