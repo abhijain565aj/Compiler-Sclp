@@ -6,8 +6,17 @@ The project was done as part of **CS-306**. The implementation in `src/` contain
 
 ## Build
 
+We currently use hard symbolic links for compilation from a single directory, with files organised into a directory structure within the src folder. Hence, on each new file creation or git pull symbolic links need to be recreated from the src directory through 
+
 ```bash
 cd src
+make create-links
+```
+
+For all other compilation and uses, one can work from the `sclp-submit` directory. The following command creates the final `sclp` target.
+
+```bash
+cd ../sclp-submit
 make
 ```
 
