@@ -1,13 +1,37 @@
 GROUP_ID=JAN2026_group_7
 
-CXX = g++
-CXXFLAGS = -std=c++23 -g -Wall -Wextra -Wsign-conversion -Wconversion -Wpedantic -Wshadow -Wnon-virtual-dtor -Wsuggest-override -Wmissing-declarations -Wnull-dereference -Woverloaded-virtual -Wlogical-op -Wduplicated-cond -Wduplicated-branches -MMD
-CXXFLAGS = -std=c++23 -g -MMD
+CXX = g++-15
+# Combined CXXFLAGS so the strict warnings are applied alongside the C++23 and MMD flags
+# CXXFLAGS = -std=c++23 -g -Wall -Wextra -Wsign-conversion -Wconversion -Wpedantic -Wshadow -Wnon-virtual-dtor -Wsuggest-override -Wmissing-declarations -Wnull-dereference -Woverloaded-virtual -Wlogical-op -Wduplicated-cond -Wduplicated-branches -MMD
 
 TARGET = sclp
 
-LEX = flex
-YACC = bison
+# --- OS-SPECIFIC SETUP ---
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    # macOS Configuration (Local machine via Homebrew)
+    FLEX_PREFIX := $(shell brew --prefix flex)
+    ARGP_PREFIX := $(shell brew --prefix argp-standalone)
+    BISON_PREFIX := $(shell brew --prefix bison)
+
+    # Add the include paths for the compiler
+    CXXFLAGS += -I$(FLEX_PREFIX)/include -I$(ARGP_PREFIX)/include
+    
+    # Add the library path and specific argp library for the linker
+    LDFLAGS += -L$(ARGP_PREFIX)/lib -largp
+    
+    # Override default Apple tools with modern Homebrew versions
+    LEX = $(FLEX_PREFIX)/bin/flex
+    YACC = $(BISON_PREFIX)/bin/bison
+else
+    # Linux Configuration (Grading server)
+    LEX = flex
+    YACC = bison
+    
+    # argp is built into glibc on Linux, so we leave LDFLAGS empty here
+    LDFLAGS += 
+endif
+# -------------------------
 
 LOCATION_FILE = location.hh
 LEX_SRC = scanner.l
@@ -26,8 +50,9 @@ SETUP-DIR = ../sclp/
 
 all: $(TARGET)
 
+# The LDFLAGS variable is added to the very end of this linking step
 $(TARGET): $(YACC_OUT_H) $(YACC_OUT_C) $(LEX_OUT_C) $(OBJS) 
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
 %.o : %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -68,4 +93,3 @@ create-links:
 
 run:
 	@bash checker.sh -c -v
-
