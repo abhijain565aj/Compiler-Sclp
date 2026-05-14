@@ -1,5 +1,7 @@
 # Compiler-Sclp
 
+**Contributors:** Malay Kedia, Abhi Jain
+
 This repository contains an implementation of **SCLP**, a language processor for a small C-like language, based on Prof. Uday Khedker's SCLP framework: <https://www.cse.iitb.ac.in/~uday/sclp-web/>.
 
 This project was completed as part of **CS-306**. The final assignment after five labs is present in the `src/` directory, and the implementation supports SCLP up to **Level 5 / Assignment 5**.
